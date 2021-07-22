@@ -1,6 +1,7 @@
 import React, { useContext, useRef, useState } from 'react';
 
 import { AuthContext } from '../../store/authContext';
+import { url } from '../../utils';
 import classes from './AuthForm.module.css';
 
 const AuthForm = () => {
@@ -21,10 +22,6 @@ const AuthForm = () => {
     const enteredPassword = passwordInputRef.current.value;
 
     setIsLoading(true);
-
-    const baseUrl = 'https://identitytoolkit.googleapis.com/v1/accounts';
-    const key = 'key=AIzaSyDV9fIBoyYqKtg_uYaKU7enOIosIK7uTAI';
-    const url = (fnName) => `${baseUrl}:${fnName}?${key}`;
 
     fetch(url(isLogin ? 'signInWithPassword' : 'signUp'), {
       method: 'POST',
