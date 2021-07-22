@@ -9,9 +9,7 @@ const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const switchAuthModeHandler = () => {
-    setIsLogin((prevState) => !prevState);
-  };
+  const switchAuthModeHandler = () => setIsLogin((prevState) => !prevState);
 
   const submitHandler = (event) => {
     event.preventDefault();
@@ -21,36 +19,36 @@ const AuthForm = () => {
 
     setIsLoading(true);
 
-    if (isLogin) {
-      // ?
-    } else {
-      fetch(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDV9fIBoyYqKtg_uYaKU7enOIosIK7uTAI',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            email: enteredEmail,
-            password: enteredPassword,
-            returnSecureToken: true,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      ).then((res) => {
+    const baseUrl = 'https://identitytoolkit.googleapis.com/v1/accounts';
+    const key = 'key=AIzaSyDV9fIBoyYqKtg_uYaKU7enOIosIK7uTAI';
+    const url = (fnName) => `${baseUrl}:${fnName}?${key}`;
+
+    fetch(url(isLogin ? 'signInWithPassword' : 'signUp'), {
+      method: 'POST',
+      body: JSON.stringify({
+        email: enteredEmail,
+        password: enteredPassword,
+        returnSecureToken: true,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
         setIsLoading(false);
 
         if (res.ok) {
-          // ...
+          return res.json();
         }
         return res.json().then((data) => {
           const errorMessage = 'Authentication failed!';
           // if (data && data.error && data.error.message)
           //   errorMessage = data.error.message;
-          alert(errorMessage);
+          throw new Error(errorMessage);
         });
-      });
-    }
+      })
+      .then((data) => console.log(data))
+      .catch((err) => alert(err.message));
   };
 
   return (
