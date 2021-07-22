@@ -77,6 +77,3 @@ export const AuthContextProvider = ({ children }) => {
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
-AuthContextProvider.propTypes = {
-  children: React.Children.isRequired,
-};
