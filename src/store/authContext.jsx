@@ -3,9 +3,16 @@ import React, { createContext, useState } from 'react';
 export const AuthContext = createContext({
   token: '',
   isLoggedIn: false,
-  login: (token) => {},
+  login: (token, expirationTime) => {},
   logout: () => {},
 });
+
+const calculateRemainingTime = (expirationTime) => {
+  const currentTime = new Date().getTime();
+  const adjExpirationTime = new Date(expirationTime).getTime();
+
+  return adjExpirationTime - currentTime;
+};
 
 export const AuthContextProvider = ({ children }) => {
   const initialToken = localStorage.getItem('token');
@@ -13,14 +20,18 @@ export const AuthContextProvider = ({ children }) => {
 
   const userIsLoggedIn = !!token;
 
-  const loginHandler = (newToken) => {
-    setToken(newToken);
-    localStorage.setItem('token', token);
-  };
-
   const logoutHandler = () => {
     setToken(null);
     localStorage.removeItem('token');
+  };
+
+  const loginHandler = (newToken, expirationTime) => {
+    setToken(newToken);
+    localStorage.setItem('token', token);
+
+    const remainingTime = calculateRemainingTime(expirationTime);
+
+    setTimeout(logoutHandler, remainingTime);
   };
 
   const contextValue = {

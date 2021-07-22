@@ -1,13 +1,10 @@
 import React, { useContext, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import { AuthContext } from '../../store/authContext';
 import { url } from '../../utils';
 import classes from './AuthForm.module.css';
 
 const AuthForm = () => {
-  const history = useHistory();
-
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
 
@@ -43,14 +40,20 @@ const AuthForm = () => {
         if (res.ok) {
           return res.json();
         }
-        return res.json().then((data) => {
+        return res.json().then(() => {
           const errorMessage = 'Authentication failed!';
           // if (data && data.error && data.error.message)
           //   errorMessage = data.error.message;
           throw new Error(errorMessage);
         });
       })
-      .then((data) => login(data.idToken))
+      .then((data) => {
+        const expirationTime = new Date(
+          new Date().getTime() + +data.expiresIn * 1000
+        );
+
+        login(data.idToken, expirationTime);
+      })
       .catch((err) => alert(err.message));
   };
 
