@@ -50,10 +50,7 @@ const AuthForm = () => {
           throw new Error(errorMessage);
         });
       })
-      .then((data) => {
-        login(data.idToken);
-        history.replace('/');
-      })
+      .then((data) => login(data.idToken))
       .catch((err) => alert(err.message));
   };
 
